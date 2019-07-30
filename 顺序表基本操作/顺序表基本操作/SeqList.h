@@ -3,6 +3,14 @@
 #include <assert.h>
 typedef int DataType;
 
+//静态顺序表
+#define N 100
+typedef struct SeqList
+{
+	DataType array[N];//定长数组
+	size_t size;//有效数据个数
+}SeqList;
+//动态顺序表
 typedef struct SeqList
 {
 	DataType* _array; // 保存顺序表中有效元素个数 

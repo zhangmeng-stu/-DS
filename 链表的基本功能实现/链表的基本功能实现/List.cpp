@@ -44,7 +44,7 @@ void SListPopBack(SList* pl)
 			cur = cur->_pNext;
 		}
 		free(cur->_pNext);
-		cur->_pNext =NULL:
+		cur->_pNext = NULL;
 	}
 	}
 
@@ -84,11 +84,18 @@ void SListErase(SList* pl, Node* pos)
 	while (cur != NULL)
 	{
 		Node* next = pos->_pNext;
-		if (cur->_data == pos->_data)
+		if (cur->_pNext == pos)
 		{
-			cur->_pNext = next;
+			if (pos == pl->_pHead)
+			{
+				SListPopFront(pl);
+			}
+			else
+			{
+				cur->_pNext = next;
+				free(pos);
+			}
 		}
-		cur = cur->_pNext;
 	}
 }
 
@@ -202,7 +209,7 @@ void DListPushBack(DLNode* pHead, DLDataType data)
 {
 	DLNode* node = (DLNode*)malloc(sizeof(DLNode));
 	node->_data = data;
-	node->_pPre = pHead->_pNext;
+	node->_pPre = pHead->_pPre;
 	node->_pNext = pHead;
 	pHead->_pPre->_pNext = node;
 	pHead->_pPre = node;
@@ -212,26 +219,98 @@ void DListPushBack(DLNode* pHead, DLDataType data)
 // 尾删 
 void DListPopBack(DLNode* pHead)
 {
-
+	assert(pHead->_pNext != pHead);
+	DLNode *prev = pHead->_pPre;
+	DLNode *next = prev->_pPre;
+	free(prev);
+	pHead->_pPre = next;
+	next->_pNext = pHead;
 }
 
 // 头插 
-void DListPushFront(DLNode* pHead, DLDataType data);
+void DListPushFront(DLNode* pHead, DLDataType data)
+{
+	DLNode*first = pHead->_pNext;
+	DLNode* node = (DLNode*)malloc(sizeof(DLNode));
+	node->_data = data;
+	pHead->_pNext = node;
+	node->_pPre = pHead;
+	node->_pNext = first;
+	first->_pPre = node;
+}
 
 // 头删 
-void DListPopFront(DLNode* pHead);
+void DListPopFront(DLNode* pHead)
+{
+	assert(pHead->_pNext != pHead);
+	DLNode* head = pHead->_pNext;
+	DLNode* prev = head->_pNext;
+	free(head);
+	pHead->_pNext = prev;
+	prev->_pPre = pHead;
+
+}
 
 // 在链表中查找值为data的节点，找到返回节点的位置 
-DLNode* DListFind(DLNode* pHead, DLDataType data);
+DLNode* DListFind(DLNode* pHead, DLDataType data)
+{
+	DLNode* cur = pHead->_pNext;
+	while (cur != pHead)
+	{
+		if (cur->_data == data)
+		{
+			return cur;
+		}
+		cur = cur->_pNext;
+	}
+	return NULL;
+
+}
 
 // 在pos位置(插入成功后新节点实际在pos前)插入值为data的元素 
-void DListInsert(DLNode* pos, DLDataType data);
+void DListInsert(DLNode* pos, DLDataType data)
+{
+	DLNode* prev = pos->_pPre;
+	DLNode* node = (DLNode*)malloc(sizeof(DLNode));
+	node->_data = data;
+	prev->_pNext = node;
+	node->_pPre = prev;
+	node->_pNext = pos;
+	pos->_pPre = node;
+}
 
 // 删除pos位置的节点 
-void DListErase(DLNode* pos);
+void DListErase(DLNode* pos)
+{
+	DLNode *head = pos->_pPre;
+	DLNode *cur = pos->_pNext;
+	free(pos);
+	head->_pNext = cur;
+	cur->_pPre = head;
+}
 
 // 将链表中的所有节点清空 
-void DListClear(DLNode* pHead);
+void DListClear(DLNode* pHead)
+{
+	DLNode* cur = pHead->_pNext;
+	while (cur != pHead)
+	{
+		DLNode* next = cur->_pNext;
+		cur = NULL;
+		cur = next;
+	}
+	pHead = NULL;
+}
 
 // 销毁链表 
-void DListDestroy(DLNode** pHead);
+void DListDestroy(DLNode* pHead)
+{
+	DLNode* cur = pHead->_pNext;
+	while (cur != pHead)
+	{
+		DLNode* next = cur->_pNext;
+		free(cur);
+		cur = next;
+	}
+	pHead = NULL;
+}
